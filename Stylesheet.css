@@ -16,7 +16,7 @@ body{
     width: 700px;
     height: 90%;
 
-    background-image: url("/assets/Flag_of_Germany_\(1935–1945\).svg.png");
+    background-image: url("image.png");
     background-size: 200px;
     background-position-y: center;
     background-position-x: -40px;
