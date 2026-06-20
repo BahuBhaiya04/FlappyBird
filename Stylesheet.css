@@ -3,110 +3,69 @@
     padding: 0;
     box-sizing: border-box;
 }
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
+body{
     height: 100vh;
 
     background-color: rgb(22, 22, 22);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 .background{
-    width: 700px;
     height: 90%;
-
-    background-image: url("image.png");
-    background-size: 200px;
-    background-position-y: center;
-    background-position-x: -40px;
-    /* background-repeat: no-repeat;
-    /* background-color: aqua; */
-
-    position: absolute;
+    aspect-ratio: 224/265;
+    
+    /* Bg size 1183 X 988 */
+    /* Must be a repeating background for continuity */
+    background-image: url("/assets/Super-Perfected-BG.png");
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+    /* background-position: right 50px; */
 
     border-radius: 20px;
 }
+
 .child-background{
-    height: 90%;
-    width: 700px;
+    width: 100%;height: 100%;
+    
+    background-color: rgba(0, 0, 0, 0.1);
+
+    /* border: 2px solid rgba(255, 255, 0, 0.534); */
+    border-radius: 20px;
 
     position: relative;
-    z-index: 1;
-
-    background-color: rgba(0, 0, 0, 0.2);
-
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 0, 0.534);
-
-    overflow: hidden;
+    overflow: hidden;   /* For obstacle look decent*/
 }
+
+/* position relative finds its nearest "POSITIONED" ancestor"*/
 
 .obstacle{
-    background-color: greenyellow;
-    position: absolute; /* important */
-    right: 0;           /* start from the right edge */
-    top: 0;             /* or some dynamic top */
-    width: 50px;        /* fixed width */
-    height: 100%;       /* full height of container */
-    background-color: greenyellow;
-}
-    /* height: 100%; */
-    /* width: 8%; */
+    width: 8%;height: inherit;        
+    
+    background-color: rgb(153, 255, 0);
 
-    /* display: flex; */
-    /* align-items: center; */
+    position: absolute;
+    right: 0; top: 0;
 
-    /* position: absolute; */
-    /* transform: translate(50%,-20px); */
-    /* right: 0; */
-    /* animation: name duration timing-function delay iteration-count direction fill-mode; */
-    /* animation: hurdle-mover 2s linear; */
-@keyframes hurdle-mover{
-    0%{
-        right: 0%;
-    }
-    100%{
-        right: 105%;
-    }
+    z-index: 0;/* For not phasing the drone*/
 }
 
-.test{
-    height: 30%;
-    width: 100%;
-    background-color: beige;
-}
+/*Keyframes not advised as they will mess with 
+end screen after gameover windoww*/
 
 .drone{
-    height: 20px;
-    width: 20px;
+    /* Bird Dimentions 377 X 281*/
+    height: 6%;
+    aspect-ratio: 12/9; /* I love this property */
 
-    background-color: hotpink;
+    background-image: url(/assets/Flappy-Bird-PNG-Photos.png);
+    background-size: 100%;
     
-    position: relative;
-    z-index: 1;
-    /* transform: translate(0,-50%); */
-    top: 50%;
-    left: 25%;
+    position: absolute;
+    top: 50%;left: 25%;
 
-    /* animation: gravity .7s cubic-bezier(0.5, 0.03, 1, 0.49) forwards; */
-    /* }cubic-bezier(0.03, 1.12, 0.41, 0.96) */
-    }
-
-@keyframes modi-flapper {
-    0%{
-        top: 0%;
-    }
-    100%{
-        top: 50%;
-    }
-}
-
-@keyframes gravity {
-    0%{
-        top: 50%;
-    }
-    100%{
-        top: 100%;
-    }
+    z-index: 1;/*For not phasing inside obstacle*/
 }
