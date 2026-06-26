@@ -2,11 +2,6 @@
 console.log('Code.js Imported');
 let obstacle = document.body.querySelector(".obstacle");
 let playground = document.body.querySelector(".child-background");
-// console.log(obstacle);
-let background = document.body.querySelector(".background");
-
-let i=0;
-
 //Bird is drone
 let drone = document.body.querySelector(".drone");
 
@@ -14,39 +9,72 @@ let drone = document.body.querySelector(".drone");
 let booster_isRunning = false;
 
 //--------------------Obstacle Designing--------------------\\
-function obstacle_displacer(params,s) {
-    params.style.transform = `translateX(${s}px)`;
-}
+const obstacleWidth = obstacle.getBoundingClientRect().width;
+const playWidth = playground.getBoundingClientRect().width;
 
-obstacle_displacer(obstacle)
+function obstacle_append(time) {
 
-function obstacle_render(params) {
+    const obst = document.createElement('div');
+    obst.setAttribute('class','obstacle');
+    playground.append(obst);
+
+    const pipeUp = document.createElement('div')
+    pipeUp.setAttribute('class','pipeUp pipe');
+    obst.append(pipeUp);
+
+    const opening = document.createElement('div')
+    opening.setAttribute('class','opening');
+    obst.append(opening);
+
+    const opening2 = document.createElement('div')
+    opening2.setAttribute('class','opening2');
+    opening.append(opening2);
+
+    const pipeDown = document.createElement('div')
+    pipeDown.setAttribute('class','pipeDown pipe');
+    obst.append(pipeDown);
+
+
+    do {
+        pipeUpHeight = (Math.random()*70)+15;
+        openingHeight = (Math.random()*15)+25;
+
+    } while ((pipeUpHeight+openingHeight)>110);
     
-}
-
-function obstacle_generator(){
-    
-    console.log(i);
-    i++
-
-    //obstacle creation
-    let new_obstacle = document.createElement('div');
-    new_obstacle.setAttribute('class','obstacle')
-    playground.append(new_obstacle);
-    // tracker_module(new_obstacle);
-    
-    // obstacle removal
-    new_obstacle.addEventListener('animationend', ()=>{
-        new_obstacle.remove();
-        console.log('Obstacle Removed');
+    objectArr.push({
+        element: obst,
+        x:0,
+        pipeUpHeight:pipeUpHeight,
+        openingHeight:openingHeight
     })
-
-    if(i<10){
-        setTimeout(obstacle_generator,3000);//call back recursive function
-    }
-
 }
 
+let objectArr =[{
+    element:obstacle,
+    x:0,
+    pipeUpHeight:50,
+    openingHeight:30
+}];
+let pipeUpHeight,openingHeight;
+let v = 5;
+function obstacle_displacer() {
+    for (let i = 0; i < objectArr.length; i++) {
+        
+        objectArr[i].x += v;     
+        objectArr[i].element.style.transform = `translateX(${-objectArr[i].x}px)`;
+        objectArr[i].element.style.setProperty("--openingHeight",`${objectArr[i].openingHeight}%`)
+        objectArr[i].element.style.setProperty("--pipeUpHeight",`${objectArr[i].pipeUpHeight}%`)
+        
+        if (objectArr[i].x > (playWidth+obstacleWidth)) {
+        objectArr[i].element.remove();
+        objectArr.shift();
+        }
+        if (objectArr[i].x > playWidth * 0.75 &&
+            objectArr[i].x < playWidth * 0.80) {            
+            collusionCheck(i);
+        }
+    }
+}
 
 
 //--------------------Bird Building--------------------\\
@@ -67,69 +95,41 @@ let ceiling = playground.getBoundingClientRect().top
 let ground = playground.getBoundingClientRect().bottom//not in distance odule because no need for dynaic offset
 
 
-let offset = distance_module()[0];
+let offset_floor = distance_module()[0];
 let offset_ceil = distance_module()[1];
-
-// drone.style.transform = `translateY(${offset}px)`;
-function bird_tilt(params) {
-    if(booster_isRunning){
-        params.style.transform = `rotate(${-45}deg)`;
-    }
-    else{
-        params.style.transform = `rotate(${45}deg)`;
-    }
-}
-bird_tilt(drone)
-
 
 
 //--------------------Game Physics--------------------\\
 function gravity(Target,t) {
     
     let u = 0
-    let g = 0.02;
+    let g = 0.015;
     
     s = s+ g*t*t;
         
     //Gravity halting commands
-    if(s>=offset ) {
+    if(s>=offset_floor) {
         console.log("gravity cancel by gravity offset statement");
-        s = offset;
-        game_loop_isRunning = false;   //Halts game_loop Funtion
+        s = offset_floor;
+        game_loop_isRunning = false;//Halts game_loop Funtion
         Target.style.transform = `translateY(${s}px)`;
         return;
     }
-    if(booster_isRunning){
-        console.log("gravity cancel by is running statement ");
-        Target.style.transform = `translateY(${s}px)`;
-        return;
-    }
-        
-    Target.style.transform = `translateY(${s}px)`;
-    requestAnimationFrame(game_loop);
+    Target.style.transform = `translateY(${s}px) rotate(${deg}deg)`;
     return s;
 }
 
 //-------------Booster for Drone
 //"t" variable is not required for booster
 // But to transfer seamlessly for gravity again
-function booster(params,time) {
-    console.log("boosteron");
-    
-    if (booster_isRunning)return;
-    booster_isRunning = true;
-    console.log('definitelyon');
-    
-    //final value to which booster applies
-    let jump_cal = s-(ground*0.1); 
-    console.log("jump_cal",jump_cal);
-
+let jump_cal, sumation;
+let deg = 25;
+let u = -0.3;// must be negative
+function booster(params,time,jump_cal) {
     // "s" translates as RAF gives frames to change continuously via obj
-        let u = -0.2; // must be negative
-        s += u*time*time;
-        params.style.transform = `translateY(${s}px)`
-        console.log("booster module",s);
-
+        s += u*time;
+        params.style.transform = `translateY(${s}px) rotate(${-deg}deg)`
+        
     //jummp calibration
     if (s<=offset_ceil) {
         s = offset_ceil
@@ -137,34 +137,80 @@ function booster(params,time) {
         return game_loop_isRunning = false;
     }
     if(s<=jump_cal){
-        console.log("jump_cal done return", s);
         booster_isRunning = false;
-        gravity(params,time)
         return;
     }
-    requestAnimationFrame(game_loop);
 }
+
+//-----------------CollusionEngineering-----------------\\
+let opening = document.body.querySelector('.opening');
+let obstacleHeight = obstacle.getBoundingClientRect().height;
+// let openingHeight = opening.getBoundingClientRect().height;
+// openingHeight = opening.getBoundingClientRect().height;
+let pipeUpHeightTrue ,droneHeight;
+function collusionCheck(i) {
+    pipeUpHeightTrue = 0.01*((objectArr[i].pipeUpHeight)*obstacleHeight - 0.5*obstacleHeight*(objectArr[i].openingHeight))
+
+    droneHeight = drone.getBoundingClientRect().top-ceiling;    
+    if (droneHeight>pipeUpHeightTrue && droneHeight<pipeUpHeightTrue+0.01*obstacleHeight*(objectArr[i].openingHeight)) {
+        
+        return;
+    }
+    game_loop_isRunning = false;
+}
+
+
+//-----------BackgroundDisplacer-------------\\
+let backImg = document.body.querySelector('.background');
+let n = 0
+function backgroundDisplacer() {
+    n += 1;
+    backImg.style.backgroundPosition = `${-n}px`;
+}
+
 
 
 //-----------------GameLoop----------------\\
 let s = 0;  //initial value of translate of drone
-let tIni = 0;
+let lastTime, tInit, deltaTime;
 let game_loop_isRunning = true;
-
-function game_loop(time) {
-    
+function game_loop(timeRn) {
     
     //--Counts ms of each Frame--\\
-    let tFin = time-tIni; 
-    tIni = time;
-    //---------------------------\\
+    if (lastTime == undefined) {
 
-    //Exit Conditions
-    if(game_loop_isRunning == false){
-        console.log("gameloop exit");
+        lastTime = timeRn;
+        tInit = timeRn;
+
+        requestAnimationFrame(game_loop);
         return;
     }
+    backgroundDisplacer()
+
+    //=========FrameTimeCalculator========\\
+    deltaTime = timeRn-lastTime; 
+    lastTime = timeRn;
     
+    //=====BoosterGravityFunctionDecision====\\
+    if(booster_isRunning){
+        booster(drone,deltaTime,jump_cal);
+
+    }else{
+        gravity(drone,deltaTime);
+    }
+
+    //===========ObstacleWorking==========\\
+    if (timeRn > tInit+2000) {
+        tInit = timeRn;
+        obstacle_append();
+    }
+    obstacle_displacer();
+    
+    //=========ExitConditions=========\\
+    if(game_loop_isRunning == false){
+        return;
+    }
+    requestAnimationFrame(game_loop);
 }
 
 //--------------------Input Events--------------------\\
@@ -173,10 +219,14 @@ document.addEventListener('click',(e)=>{
 
     // let gravity = false;
     if (isfirst_click == false) {
-        booster(drone,time)
+        jump_cal= s-(ground*0.08);
+        booster_isRunning = true;
     }
     if (isfirst_click) {
-        game_loop(16.6); //Starts game
+        jump_cal= s-(ground*0.08);
         isfirst_click = false;
+        booster_isRunning = true;
+        
+        requestAnimationFrame(game_loop); //Starts game
     }
 })

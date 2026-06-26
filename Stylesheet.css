@@ -1,7 +1,11 @@
+/* Width x Height */
 :root{
     --childBackgroundHeight: 89.44%;
-    --groundHeight: calc(100% - var(--childBackgroundHeight));
+    --obstacleWidth:12%;
+    --openingHeight:30%;  /*25 to 40%*/
+    --pipeUpHeight:50%  /* 15 to 85%*/
 }
+
 
 *{
     margin: 0;
@@ -23,13 +27,9 @@ body{
     height: 90%;
     aspect-ratio: 224/265;
     
-    /* Bg size 1183 X 988 */
-    /* Must be a repeating background for continuity */
     background-image: url("/assets/Super-Perfected-BG.png");
     background-size: auto 100%;
     background-repeat: repeat-x;
-    /* background-position: right 50px; */
-
     border-radius: 20px;
 }
 
@@ -38,30 +38,65 @@ body{
     
     background-color: rgba(0, 0, 0, 0.1);
 
-    /* border: 2px solid rgba(255, 255, 0, 0.534); */
     border-radius: 20px;
 
     position: relative;
-    /* overflow: hidden;   For obstacle look decent (prev. verson)*/ 
+    overflow: hidden;
 }
-.ground{
-    width: 100%; height: var(--groundHeight);
-
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-}
-
 /* position relative finds its nearest "POSITIONED" ancestor"*/
 
 .obstacle{
-    width: 8%;height: 100%;        
-    
-    background-color: rgb(153, 255, 0);
+    width: var(--obstacleWidth);height: 100%;        
 
     position: absolute;
-    right: 0; top: 0;
+    right: calc(-1*var(--obstacleWidth)) ; top: 0;
 
     z-index: 0;/* For not phasing the drone*/
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
+.pipe{
+
+    background-image: url("assets/pipe.png");
+    background-repeat: repeat;
+    background-size: 100% auto;
+    position: absolute;
+    
+}
+.pipeUp{
+    width: 100%;height: calc(var(--pipeUpHeight) - 0.5*var(--openingHeight));
+    top: 0;
+}
+.pipeDown{
+    width: 100%;height: calc(100% - var(--pipeUpHeight) - 0.5*var(--openingHeight));
+    bottom: 0;
+}
+
+/* Dimentions for pipe entry 1600 X 693 */
+
+/* opening.getBoundingClientRect().height - calc((2)x(1600x693)x(opening.getBoundingClientRect().width)*/
+.opening{
+    width: 109%;height: var(--openingHeight);
+    
+    position: absolute;
+    top: calc(var(--pipeUpHeight) - 0.5*var(--openingHeight));
+
+    background-image: url(assets/pipe-entry-down-better.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-y: 0%;
+}
+.opening2{
+    width: 100%;height: 100%;
+
+    background-image: url(assets/pipe-entry-up.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-y: 100%;
+
 }
 
 /*Keyframes not advised as they will mess with 
