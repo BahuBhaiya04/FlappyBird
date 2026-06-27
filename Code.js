@@ -57,6 +57,7 @@ let objectArr =[{
 }];
 let pipeUpHeight,openingHeight;
 let v = 5;
+let droneCalibrate = drone.getBoundingClientRect().width;
 function obstacle_displacer() {
     for (let i = 0; i < objectArr.length; i++) {
         
@@ -69,8 +70,8 @@ function obstacle_displacer() {
         objectArr[i].element.remove();
         objectArr.shift();
         }
-        if (objectArr[i].x > playWidth * 0.75 &&
-            objectArr[i].x < playWidth * 0.80) {            
+        if (objectArr[i].x+droneCalibrate > playWidth * 0.75 &&
+            objectArr[i].x+droneCalibrate < playWidth * 0.90) {            
             collusionCheck(i);
         }
     }
@@ -145,19 +146,24 @@ function booster(params,time,jump_cal) {
 //-----------------CollusionEngineering-----------------\\
 let opening = document.body.querySelector('.opening');
 let obstacleHeight = obstacle.getBoundingClientRect().height;
-// let openingHeight = opening.getBoundingClientRect().height;
-// openingHeight = opening.getBoundingClientRect().height;
 let pipeUpHeightTrue ,droneHeight;
+let score = 0;
 function collusionCheck(i) {
     pipeUpHeightTrue = 0.01*((objectArr[i].pipeUpHeight)*obstacleHeight - 0.5*obstacleHeight*(objectArr[i].openingHeight))
 
-    droneHeight = drone.getBoundingClientRect().top-ceiling;    
+    droneHeight = drone.getBoundingClientRect().top-ceiling;  
+    
+    //Collusion True
     if (droneHeight>pipeUpHeightTrue && droneHeight<pipeUpHeightTrue+0.01*obstacleHeight*(objectArr[i].openingHeight)) {
-        
         return;
     }
     game_loop_isRunning = false;
 }
+//----------------ScoringSystem-------------\\
+let scoreBox = document.getElementById("number")
+console.log(scoreBox);
+// score += 1;
+// scoreBox.textContent = score;
 
 
 //-----------BackgroundDisplacer-------------\\
@@ -202,8 +208,11 @@ function game_loop(timeRn) {
     //===========ObstacleWorking==========\\
     if (timeRn > tInit+2000) {
         tInit = timeRn;
+        score += 1;
+        scoreBox.textContent = score;
         obstacle_append();
     }
+    
     obstacle_displacer();
     
     //=========ExitConditions=========\\

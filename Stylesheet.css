@@ -45,6 +45,25 @@ body{
 }
 /* position relative finds its nearest "POSITIONED" ancestor"*/
 
+.scoreBox{
+    /* background-color: aqua; */
+    position: absolute;
+
+    width: 10%; height: 10%;
+    transform: translateX(-50%);
+    left: 50%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1;
+}
+#number{
+    font-size: 8vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(244, 250, 255);
+}
 .obstacle{
     width: var(--obstacleWidth);height: 100%;        
 
